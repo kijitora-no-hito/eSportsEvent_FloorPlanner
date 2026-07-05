@@ -4,6 +4,8 @@
 
 ブラウザで `index.html` を開くだけで動作します。サーバー・ビルド・外部ライブラリは一切不要です。
 
+**▶ ブラウザでそのまま試す: https://kijitora-no-hito.github.io/eSportsEvent_FloorPlanner/**
+
 <!-- TODO: スクリーンショットを追加
 ![スクリーンショット](docs/screenshot.png)
 -->
