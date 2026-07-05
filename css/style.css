@@ -1,0 +1,217 @@
+/* 会場レイアウト・機材配線ツール スタイル */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+
+#app { display: flex; flex-direction: column; height: 100vh; }
+
+/* ---- ツールバー ---- */
+#toolbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 6px 12px; background: #2b3a4a; color: #fff;
+  flex: 0 0 auto;
+}
+#app-title { font-weight: bold; font-size: 15px; }
+#mode-buttons { display: flex; gap: 4px; }
+.mode-btn {
+  padding: 5px 14px; border: 1px solid #556b80;
+  background: #3d5166; color: #dbe4ee; border-radius: 4px; cursor: pointer;
+}
+.mode-btn.active { background: #f0a832; color: #222; font-weight: bold; border-color: #f0a832; }
+#zoom-controls { display: flex; gap: 2px; }
+#zoom-controls button {
+  padding: 5px 8px; border: 1px solid #556b80; background: #3d5166;
+  color: #dbe4ee; border-radius: 4px; cursor: pointer;
+}
+#btn-zoom-reset { min-width: 52px; font-size: 12px; }
+#zoom-controls button:hover { filter: brightness(1.15); }
+#toolbar-actions { margin-left: auto; display: flex; gap: 6px; }
+#toolbar-actions button {
+  padding: 5px 10px; border: 1px solid #556b80; background: #3d5166;
+  color: #dbe4ee; border-radius: 4px; cursor: pointer;
+}
+#toolbar-actions button:hover, .mode-btn:hover { filter: brightness(1.15); }
+
+/* ---- メイン2ペイン ---- */
+#main { display: flex; flex: 1 1 auto; min-height: 0; }
+
+/* ---- 左パレット ---- */
+#palette {
+  flex: 0 0 220px; overflow-y: auto; background: #f4f6f8;
+  border-right: 1px solid #cdd5dd; padding: 8px; display: flex;
+  flex-direction: column; gap: 10px;
+}
+#palette-hint {
+  font-size: 11px; color: #666; min-height: 28px;
+  background: #fff8e6; border: 1px solid #eedc9a; border-radius: 4px;
+  padding: 4px 6px;
+}
+#palette-hint:empty { display: none; }
+.palette-section h2 {
+  display: flex; align-items: center;
+  font-size: 12px; color: #4a5a68; border-bottom: 1px solid #cdd5dd;
+  padding-bottom: 2px; margin-bottom: 6px;
+}
+.group-toggle {
+  margin-left: auto; font-weight: normal; font-size: 11px; color: #7b8a99;
+  display: flex; align-items: center; gap: 2px; cursor: pointer;
+}
+.palette-items { display: flex; flex-direction: column; gap: 4px; }
+.palette-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px; background: #fff; border: 1px solid #cdd5dd;
+  border-radius: 4px; cursor: pointer; font-size: 13px; text-align: left;
+}
+.palette-item:hover { background: #e8f0fa; }
+.palette-item.selected { background: #dbe9fb; border-color: #4a6fa5; box-shadow: 0 0 0 1px #4a6fa5; }
+.palette-item .swatch {
+  width: 14px; height: 14px; border-radius: 3px; flex: 0 0 auto;
+  border: 1px solid rgba(0,0,0,.25);
+}
+.palette-item .ports-info { margin-left: auto; font-size: 10px; color: #888; }
+.palette-item .dup-btn {
+  border: none; background: none; cursor: pointer; font-size: 12px;
+  color: #999; padding: 0 2px;
+}
+.palette-item .dup-btn:hover { color: #333; }
+#btn-add-template {
+  padding: 6px; border: 1px dashed #8aa0b5; background: #fff;
+  color: #4a6fa5; border-radius: 4px; cursor: pointer;
+}
+#btn-add-template:hover { background: #eef4fb; }
+
+/* ---- キャンバス ---- */
+#canvas-area { flex: 1 1 auto; position: relative; min-width: 0; display: flex; flex-direction: column; }
+#canvas-wrap { flex: 1 1 auto; position: relative; min-height: 0; }
+#canvas { width: 100%; height: 100%; background: #fdfdfd; touch-action: none; display: block; }
+#grid-scale {
+  position: absolute; right: 10px; bottom: 8px;
+  background: rgba(255,255,255,.85); border: 1px solid #cdd5dd;
+  border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #4a5a68;
+  pointer-events: none;
+}
+/* ズームしても線幅を画面上で一定に保つ */
+.room polygon, .item rect.body, .port,
+.cable path.visible, .cable path.hit,
+.item .rotate-handle, .item .resize-handle,
+.preview-line, .preview-poly, .vertex-dot, .snap-cursor {
+  vector-effect: non-scaling-stroke;
+}
+.grid-dot { fill: #c8d0d8; }
+#canvas.mode-room .grid-dot { fill: #7a92aa; }
+#canvas.pan-ready { cursor: grab; }
+#canvas.panning { cursor: grabbing; }
+
+/* 部屋 */
+.room polygon { fill: rgba(160, 200, 240, 0.18); stroke: #7fa8cc; stroke-width: 2; }
+.room.selected polygon { stroke: #f0a832; stroke-width: 3; fill: rgba(240, 168, 50, 0.10); }
+.room text { font-size: 13px; fill: #6c8299; pointer-events: none; }
+
+/* アイテム(機器・什器) */
+.item { cursor: move; }
+.item rect.body { stroke: rgba(0,0,0,.4); stroke-width: 1; rx: 3; }
+.item.selected rect.body { stroke: #f0a832; stroke-width: 2.5; }
+.item text.label {
+  font-size: 10px; fill: #223; pointer-events: none;
+  text-anchor: middle; dominant-baseline: middle;
+}
+.item .rotate-handle { fill: #f0a832; stroke: #fff; stroke-width: 1.5; cursor: pointer; }
+.item .resize-handle { fill: #fff; stroke: #f0a832; stroke-width: 1.5; cursor: nwse-resize; }
+
+/* 半透過(表示OFF) */
+.dimmed { opacity: 0.15; pointer-events: none; }
+
+/* 電源未接続 */
+.item.unpowered rect.body { stroke: #d63031; stroke-width: 2; stroke-dasharray: 5 3; }
+.item .warn-badge {
+  font-size: 10px; fill: #d63031; font-weight: bold; pointer-events: none;
+  paint-order: stroke; stroke: #fdfdfd; stroke-width: 3;
+}
+
+/* ポート */
+.port { stroke: #333; stroke-width: 1; cursor: pointer; }
+.port-dir {
+  font-size: 7px; fill: #333; text-anchor: middle; pointer-events: none;
+  paint-order: stroke; stroke: #fdfdfd; stroke-width: 2;
+}
+.port.compatible { stroke: #0a8a0a; stroke-width: 2.5; cursor: crosshair; }
+.port.incompatible { opacity: 0.35; }
+.port.used { opacity: 0.45; cursor: not-allowed; }
+.port.pending { stroke: #f0a832; stroke-width: 3; }
+
+/* ケーブル */
+.cable path.visible { fill: none; stroke-width: 3; stroke-linecap: round; }
+.cable path.hit { fill: none; stroke: transparent; stroke-width: 12; cursor: pointer; }
+.cable.selected path.visible { stroke-width: 5; filter: drop-shadow(0 0 3px #f0a832); }
+.cable text.cable-length {
+  font-size: 10px; fill: #555; text-anchor: middle; pointer-events: none;
+  paint-order: stroke; stroke: #fdfdfd; stroke-width: 3;
+}
+
+/* オーバーレイ(作図中) */
+#layer-overlay { pointer-events: none; }
+.preview-line { stroke: #f0a832; stroke-width: 2; stroke-dasharray: 6 4; fill: none; }
+.preview-poly { fill: rgba(240,168,50,.08); stroke: #f0a832; stroke-width: 2; }
+.vertex-dot { fill: #f0a832; stroke: #fff; stroke-width: 1.5; }
+.snap-cursor { fill: none; stroke: #f0a832; stroke-width: 2; }
+.ghost { opacity: 0.55; pointer-events: none; }
+
+/* ---- チェックリスト ---- */
+#checklist-panel {
+  flex: 0 0 auto; max-height: 40%; display: flex; flex-direction: column;
+  border-top: 2px solid #cdd5dd; background: #f9fafb;
+}
+#checklist-header {
+  display: flex; align-items: center; gap: 8px; padding: 4px 10px;
+  background: #eef1f4;
+}
+#checklist-header h2 { font-size: 13px; color: #34495e; flex: 1; }
+#checklist-header button {
+  border: 1px solid #b9c4ce; background: #fff; border-radius: 4px;
+  padding: 2px 8px; cursor: pointer; font-size: 12px;
+}
+#checklist-body { overflow-y: auto; padding: 6px 12px; }
+#checklist-panel.collapsed #checklist-body { display: none; }
+.checklist-group { margin-bottom: 6px; }
+.checklist-group h3 { font-size: 11px; color: #7b8a99; margin: 4px 0 2px; }
+.checklist-row {
+  display: flex; align-items: center; gap: 6px; font-size: 13px;
+  padding: 1px 0;
+}
+.checklist-row.checked span.cname { text-decoration: line-through; color: #999; }
+.checklist-row .count { margin-left: auto; font-weight: bold; color: #34495e; }
+.checklist-empty { font-size: 12px; color: #999; padding: 6px 0; }
+
+/* ---- ダイアログ ---- */
+dialog {
+  border: 1px solid #b9c4ce; border-radius: 8px; padding: 16px 20px;
+  min-width: 340px; box-shadow: 0 8px 30px rgba(0,0,0,.25);
+}
+dialog::backdrop { background: rgba(0,0,0,.35); }
+#template-form { display: flex; flex-direction: column; gap: 10px; }
+#template-form h2 { font-size: 15px; }
+#template-form label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+#template-form input[type="text"] { flex: 1; padding: 4px 6px; }
+#template-form fieldset { border: 1px solid #cdd5dd; border-radius: 4px; padding: 8px; }
+#template-form legend { font-size: 12px; padding: 0 4px; }
+#tpl-ports { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.tpl-port-row { display: flex; gap: 6px; align-items: center; }
+.tpl-port-row select { flex: 1; }
+.tpl-port-row input[type="number"] { width: 56px; }
+.tpl-port-row button { border: none; background: none; cursor: pointer; color: #c0392b; }
+#btn-add-port {
+  border: 1px dashed #8aa0b5; background: #fff; border-radius: 4px;
+  padding: 3px; cursor: pointer; font-size: 12px; width: 100%;
+}
+.dialog-buttons { display: flex; justify-content: flex-end; gap: 8px; }
+.dialog-buttons button { padding: 5px 14px; border-radius: 4px; border: 1px solid #b9c4ce; cursor: pointer; }
+#btn-tpl-save { background: #4a6fa5; color: #fff; border-color: #4a6fa5; }
+
+/* ---- トースト ---- */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(40,40,40,.92); color: #fff; padding: 8px 18px;
+  border-radius: 20px; font-size: 13px; opacity: 0; pointer-events: none;
+  transition: opacity .25s; z-index: 100; max-width: 70%;
+}
+#toast.show { opacity: 1; }

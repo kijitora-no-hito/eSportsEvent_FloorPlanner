@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会場レイアウト・機材配線ツール</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- ツールバー -->
+  <header id="toolbar">
+    <span id="app-title">配信レイアウトツール</span>
+    <div id="mode-buttons">
+      <button class="mode-btn" data-mode="room" title="ショートカット: 1">間取り作成</button>
+      <button class="mode-btn" data-mode="place" title="ショートカット: 2">配置</button>
+      <button class="mode-btn" data-mode="connect" title="ショートカット: 3">接続</button>
+    </div>
+    <div id="zoom-controls">
+      <button id="btn-zoom-out" title="縮小">－</button>
+      <button id="btn-zoom-reset" title="等倍に戻す">100%</button>
+      <button id="btn-zoom-in" title="拡大">＋</button>
+    </div>
+    <div id="toolbar-actions">
+      <button id="btn-export">保存(JSON)</button>
+      <button id="btn-import">読込(JSON)</button>
+      <button id="btn-clear">全消去</button>
+      <input type="file" id="import-file" accept=".json" hidden>
+    </div>
+  </header>
+
+  <div id="main">
+    <!-- 左: パレット -->
+    <aside id="palette">
+      <div id="palette-hint"></div>
+      <section class="palette-section" id="palette-furniture">
+        <h2>什器</h2>
+        <div class="palette-items"></div>
+      </section>
+      <section class="palette-section" id="palette-devices">
+        <h2>機器</h2>
+        <div class="palette-items"></div>
+      </section>
+      <section class="palette-section" id="palette-cables">
+        <h2>ケーブル</h2>
+        <div class="palette-items"></div>
+      </section>
+      <button id="btn-add-template">＋ 機器を登録</button>
+    </aside>
+
+    <!-- 右: キャンバス + チェックリスト -->
+    <div id="canvas-area">
+      <div id="canvas-wrap">
+      <svg id="canvas" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid-dots" patternUnits="userSpaceOnUse">
+            <circle class="grid-dot" />
+          </pattern>
+        </defs>
+        <rect id="grid-bg" x="-5000" y="-5000" width="10000" height="10000" fill="url(#grid-dots)"/>
+        <g id="layer-rooms"></g>
+        <g id="layer-furniture"></g>
+        <g id="layer-devices"></g>
+        <g id="layer-cables"></g>
+        <g id="layer-ports"></g>
+        <g id="layer-overlay"></g>
+      </svg>
+      <div id="grid-scale"></div>
+      </div>
+
+      <!-- チェックリスト -->
+      <div id="checklist-panel">
+        <div id="checklist-header">
+          <h2>必要機材チェックリスト</h2>
+          <button id="btn-copy-checklist" title="テキストとしてコピー">コピー</button>
+          <button id="btn-toggle-checklist">▼</button>
+        </div>
+        <div id="checklist-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- テンプレート登録ダイアログ -->
+<dialog id="template-dialog">
+  <form method="dialog" id="template-form">
+    <h2 id="template-dialog-title">機器を登録</h2>
+    <label>名前 <input type="text" id="tpl-name" required></label>
+    <label>種別
+      <select id="tpl-kind">
+        <option value="device">機器</option>
+        <option value="furniture">什器</option>
+      </select>
+    </label>
+    <label>色 <input type="color" id="tpl-color" value="#4a6fa5"></label>
+    <fieldset>
+      <legend>ポート</legend>
+      <div id="tpl-ports"></div>
+      <button type="button" id="btn-add-port">＋ ポート追加</button>
+    </fieldset>
+    <div class="dialog-buttons">
+      <button type="button" id="btn-tpl-cancel">キャンセル</button>
+      <button type="submit" id="btn-tpl-save">登録</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast"></div>
+
+<script src="js/constants.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/geometry.js"></script>
+<script src="js/state.js"></script>
+<script src="js/render.js"></script>
+<script src="js/palette.js"></script>
+<script src="js/checklist.js"></script>
+<script src="js/interactions.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
